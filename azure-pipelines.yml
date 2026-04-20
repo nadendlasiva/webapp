@@ -1,0 +1,18 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.10'
+
+- script: |
+    pip install -r requirements.txt
+    pip install pytest pytest-azurepipelines
+  displayName: 'Install dependencies'
+
+- script: pytest --tb=short
+  displayName: 'pytest'
