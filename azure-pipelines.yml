@@ -28,9 +28,3 @@ steps:
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
     artifactName: drop
-
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: '<YOUR-SERVICE-CONNECTION>'
-    appName: '<YOUR-WEBAPP-NAME>'
-    package: '$(Build.ArtifactStagingDirectory)/app.zip'
