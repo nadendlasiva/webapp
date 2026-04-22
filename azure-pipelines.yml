@@ -35,6 +35,6 @@ steps:
   inputs:
     azureSubscription: 'azuredevops'  # ← Change this
     appType: 'webAppLinux'
-    appName: '$(azureWebAppName)'
+    appName: 'pythonwebapptest'
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
     startUpCommand: 'gunicorn --bind=0.0.0.0:8000 app:app'
