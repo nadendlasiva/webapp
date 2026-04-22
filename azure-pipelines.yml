@@ -6,6 +6,7 @@ pool:
 
 variables:
   pythonVersion: '3.11'
+  azureWebAppName: 'YOUR_APP_NAME'  # ← Change this to your Azure Web App name
 
 steps:
 - task: UsePythonVersion@0
@@ -28,3 +29,12 @@ steps:
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
     artifactName: drop
+
+# ← THIS DEPLOY STEP WAS MISSING
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'azuredevops'  # ← Change this
+    appType: 'webAppLinux'
+    appName: '$(azureWebAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
+    startUpCommand: 'gunicorn --bind=0.0.0.0:8000 app:app'
