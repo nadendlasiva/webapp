@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Hello from Python Web App running on Azure!"
+    return "Hello Welcome from Python!"
 
 @app.route("/health")
 def health():
