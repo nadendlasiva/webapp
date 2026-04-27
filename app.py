@@ -85,7 +85,7 @@ def hello():
 
         <h1>☁️ Azure Live Resource Activity</h1>
 
-        <div class="org">👑 Vivek → Assigning work to Azure Resources</div>
+        <div class="org">👑 Vivek {Manager} → Assigning work to Azure Resources</div>
 
         <!-- LIVE MOTION FLOW -->
         <div class="flow-container">
