@@ -10,330 +10,236 @@ def hello():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Task Dashboard</title>
+    <title>Azure Boards - Task Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f0f4f8;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0078d4, #005a9e);
-            color: white;
-            padding: 24px 40px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .header-icon { font-size: 40px; }
-        .header h1 { font-size: 26px; font-weight: 700; }
-        .header p { font-size: 14px; opacity: 0.85; margin-top: 4px; }
-
-        .manager-section {
-            display: flex;
-            justify-content: center;
-            margin: 30px 40px 10px;
-        }
-        .manager-card {
-            background: linear-gradient(135deg, #0078d4, #005a9e);
-            color: white;
-            border-radius: 16px;
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 6px 20px rgba(0,120,212,0.35);
-            min-width: 320px;
-        }
-        .manager-avatar {
-            width: 56px; height: 56px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; font-weight: bold;
-        }
-        .manager-info h2 { font-size: 20px; font-weight: 700; }
-        .manager-info p { font-size: 13px; opacity: 0.85; margin-top: 3px; }
-        .manager-badge {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-size: 12px;
-            margin-top: 6px;
-            display: inline-block;
-        }
-
-        .arrow-section {
-            text-align: center;
-            font-size: 28px;
-            color: #0078d4;
-            margin: 8px 0;
-            animation: bounce 1.5s infinite;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(6px); }
-        }
-
-        .stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 16px 40px;
-            flex-wrap: wrap;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 14px 28px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            min-width: 130px;
-        }
-        .stat-card .number { font-size: 28px; font-weight: 700; color: #0078d4; }
-        .stat-card .label { font-size: 12px; color: #666; margin-top: 4px; }
-
-        .team-section {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin: 20px 40px 40px;
-        }
-        .member-column {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-        .member-header {
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .member-header.akshay { background: linear-gradient(135deg, #107c10, #0b5e0b); }
-        .member-header.lenin  { background: linear-gradient(135deg, #8764b8, #5c2d91); }
-        .member-header.siva   { background: linear-gradient(135deg, #d83b01, #a52d01); }
-
-        .member-avatar {
-            width: 46px; height: 46px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; font-weight: bold; color: white;
-        }
-        .member-name { color: white; font-size: 17px; font-weight: 700; }
-        .member-role { color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 2px; }
-
-        .tasks-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-        .task-card {
-            border: 1px solid #e8ecf0;
-            border-radius: 10px;
-            padding: 14px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .task-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .task-title { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; }
-        .task-meta { display: flex; flex-direction: column; gap: 6px; }
-        .task-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .task-row .key { color: #888; }
-
-        .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .badge.completed  { background: #dff6dd; color: #107c10; }
-        .badge.inprogress { background: #fff4ce; color: #835b00; }
-        .badge.delayed    { background: #fde7e9; color: #c50f1f; }
-
-        .risk { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .risk.low    { background: #dff6dd; color: #107c10; }
-        .risk.medium { background: #fff4ce; color: #835b00; }
-        .risk.high   { background: #fde7e9; color: #c50f1f; }
-
-        .date { color: #0078d4; font-weight: 600; }
-        .dependency { color: #605e5c; font-style: italic; font-size: 11px; }
-
-        .progress-bar {
-            height: 4px;
-            background: #e8ecf0;
-            border-radius: 4px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        .progress-fill { height: 100%; border-radius: 4px; }
-        .fill-green  { background: #107c10; width: 100%; }
-        .fill-yellow { background: #f0c400; }
-        .fill-red    { background: #c50f1f; }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #888;
-            font-size: 12px;
-            border-top: 1px solid #e0e0e0;
-            background: white;
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; min-height: 100vh; }
+        .top-bar { background: #0078d4; color: white; padding: 10px 24px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .page-header { padding: 20px 24px 12px; border-bottom: 1px solid #e0e0e0; background: white; display: flex; align-items: center; gap: 16px; }
+        .manager-chip { display: flex; align-items: center; gap: 8px; background: #e6f1fb; border: 1px solid #b5d4f4; border-radius: 20px; padding: 6px 14px; }
+        .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+        .av-blue   { background: #b5d4f4; color: #0c447c; }
+        .av-green  { background: #c0dd97; color: #27500a; }
+        .av-purple { background: #cecbf6; color: #26215c; }
+        .av-amber  { background: #fac775; color: #412402; }
+        .manager-name { font-size: 13px; font-weight: 600; color: #0c447c; }
+        .manager-role { font-size: 11px; color: #185fa5; }
+        .arrow { font-size: 12px; color: #666; }
+        .stats-bar { display: flex; gap: 12px; padding: 14px 24px; background: white; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; }
+        .stat { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 20px; text-align: center; min-width: 90px; }
+        .stat-num { font-size: 22px; font-weight: 600; color: #0078d4; }
+        .stat-lbl { font-size: 11px; color: #666; margin-top: 2px; }
+        .s-green { color: #107c10 !important; }
+        .s-blue  { color: #0078d4 !important; }
+        .s-red   { color: #c50f1f !important; }
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 24px; }
+        .column { background: white; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+        .col-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e0e0e0; }
+        .col-akshay { border-top: 3px solid #107c10; }
+        .col-lenin  { border-top: 3px solid #5c2d91; }
+        .col-siva   { border-top: 3px solid #ca5010; }
+        .col-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .col-role { font-size: 11px; color: #666; margin-top: 1px; }
+        .task-badge { margin-left: auto; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #f0f0f0; color: #333; }
+        .tasks { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .task-card { border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; background: #fafafa; transition: box-shadow 0.2s; }
+        .task-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; }
+        .task-id { font-size: 10px; color: #0078d4; font-weight: 600; margin-bottom: 4px; }
+        .task-title { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; line-height: 1.4; }
+        .task-fields { border-top: 1px solid #f0f0f0; padding-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+        .field-row { display: flex; justify-content: space-between; align-items: center; }
+        .field-key { font-size: 11px; color: #666; }
+        .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+        .b-done  { background: #dff6dd; color: #107c10; }
+        .b-prog  { background: #cce4f7; color: #004f8c; }
+        .b-delay { background: #fde7e9; color: #c50f1f; }
+        .risk-low  { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #dff6dd; color: #107c10; }
+        .risk-med  { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #fff4ce; color: #835b00; }
+        .risk-high { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #fde7e9; color: #c50f1f; }
+        .date-val { font-size: 11px; color: #0078d4; font-weight: 600; }
+        .dep-val  { font-size: 10px; color: #666; font-style: italic; text-align: right; max-width: 120px; }
+        .progress { height: 3px; background: #e0e0e0; border-radius: 2px; margin-top: 8px; }
+        .prog-fill { height: 100%; border-radius: 2px; }
+        .p-green { background: #107c10; width: 100%; }
+        .p-blue  { background: #0078d4; }
+        .p-red   { background: #c50f1f; }
+        footer { text-align: center; padding: 16px; color: #888; font-size: 11px; border-top: 1px solid #e0e0e0; background: white; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="header-icon">☁️</div>
-    <div>
-        <h1>Azure Team Task Dashboard</h1>
-        <p>Real-time task tracking | ERIKS IoT Project</p>
-    </div>
+<div class="top-bar">
+    &#9651; Azure Boards &nbsp;|&nbsp; ERIKS IoT Project
 </div>
 
-<div class="manager-section">
-    <div class="manager-card">
-        <div class="manager-avatar">V</div>
-        <div class="manager-info">
-            <h2>Vivek R</h2>
-            <p>Project Manager — Assigning & Tracking Tasks</p>
-            <span class="manager-badge">👑 Manager</span>
+<div class="page-header">
+    <div class="manager-chip">
+        <div class="avatar av-blue">VR</div>
+        <div>
+            <div class="manager-name">Vivek R</div>
+            <div class="manager-role">Project Manager</div>
         </div>
     </div>
+    <div class="arrow">&#8594; Assigning tasks to team</div>
 </div>
-
-<div class="arrow-section">⬇️ Assigning Tasks ⬇️</div>
 
 <div class="stats-bar">
-    <div class="stat-card"><div class="number">9</div><div class="label">Total Tasks</div></div>
-    <div class="stat-card"><div class="number" style="color:#107c10">3</div><div class="label">Completed</div></div>
-    <div class="stat-card"><div class="number" style="color:#835b00">4</div><div class="label">In Progress</div></div>
-    <div class="stat-card"><div class="number" style="color:#c50f1f">2</div><div class="label">Delayed</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-lbl">Total tasks</div></div>
+    <div class="stat"><div class="stat-num s-green">3</div><div class="stat-lbl">Completed</div></div>
+    <div class="stat"><div class="stat-num s-blue">4</div><div class="stat-lbl">In progress</div></div>
+    <div class="stat"><div class="stat-num s-red">2</div><div class="stat-lbl">Delayed</div></div>
 </div>
 
-<div class="team-section">
+<div class="board">
 
-    <div class="member-column">
-        <div class="member-header akshay">
-            <div class="member-avatar">A</div>
-            <div><div class="member-name">Akshay</div><div class="member-role">Azure Infrastructure</div></div>
+    <!-- AKSHAY -->
+    <div class="column col-akshay">
+        <div class="col-header">
+            <div class="avatar av-green">A</div>
+            <div><div class="col-name">Akshay</div><div class="col-role">Azure Infrastructure</div></div>
+            <span class="task-badge">3</span>
         </div>
-        <div class="tasks-list">
+        <div class="tasks">
+
             <div class="task-card">
-                <div class="task-title">🔧 Azure Role Assignment Audit</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge completed">✅ Completed</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">20 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk low">Low</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">None</span></div>
+                <div class="task-id">#AZ-001</div>
+                <div class="task-title">Role assignment audit</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-done">Completed</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">20 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-low">Low</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">None</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-green"></div></div>
+                <div class="progress"><div class="prog-fill p-green"></div></div>
             </div>
+
             <div class="task-card">
-                <div class="task-title">🔐 Service Principal Review</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge inprogress">🔄 In Progress</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">28 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk medium">Medium</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">Role Assignment Audit</span></div>
+                <div class="task-id">#AZ-002</div>
+                <div class="task-title">Service principal review</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-prog">In progress</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">28 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-med">Medium</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">Role audit</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-yellow" style="width:60%"></div></div>
+                <div class="progress"><div class="prog-fill p-blue" style="width:60%"></div></div>
             </div>
+
             <div class="task-card">
-                <div class="task-title">📊 Subscription Access Report</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge delayed">⚠️ Delayed</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">25 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk high">High</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">SP Review</span></div>
+                <div class="task-id">#AZ-003</div>
+                <div class="task-title">Subscription access report</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-delay">Delayed</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">25 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-high">High</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">SP review</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-red" style="width:30%"></div></div>
+                <div class="progress"><div class="prog-fill p-red" style="width:30%"></div></div>
             </div>
+
         </div>
     </div>
 
-    <div class="member-column">
-        <div class="member-header lenin">
-            <div class="member-avatar">L</div>
-            <div><div class="member-name">Lenin</div><div class="member-role">DevOps & CI/CD</div></div>
+    <!-- LENIN -->
+    <div class="column col-lenin">
+        <div class="col-header">
+            <div class="avatar av-purple">L</div>
+            <div><div class="col-name">Lenin</div><div class="col-role">DevOps & CI/CD</div></div>
+            <span class="task-badge">3</span>
         </div>
-        <div class="tasks-list">
+        <div class="tasks">
+
             <div class="task-card">
-                <div class="task-title">⚙️ Azure DevOps Pipeline Setup</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge completed">✅ Completed</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">18 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk low">Low</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">None</span></div>
+                <div class="task-id">#AZ-004</div>
+                <div class="task-title">DevOps pipeline setup</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-done">Completed</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">18 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-low">Low</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">None</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-green"></div></div>
+                <div class="progress"><div class="prog-fill p-green"></div></div>
             </div>
+
             <div class="task-card">
-                <div class="task-title">🚀 Web App Deployment</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge inprogress">🔄 In Progress</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">30 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk medium">Medium</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">Pipeline Setup</span></div>
+                <div class="task-id">#AZ-005</div>
+                <div class="task-title">Web app deployment</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-prog">In progress</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">30 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-med">Medium</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">Pipeline setup</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-yellow" style="width:70%"></div></div>
+                <div class="progress"><div class="prog-fill p-blue" style="width:70%"></div></div>
             </div>
+
             <div class="task-card">
-                <div class="task-title">🔍 Monitoring & Alerts Config</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge inprogress">🔄 In Progress</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">05 Jul 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk low">Low</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">Web App Deployment</span></div>
+                <div class="task-id">#AZ-006</div>
+                <div class="task-title">Monitoring & alerts config</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-prog">In progress</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">05 Jul 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-low">Low</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">Web app deploy</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-yellow" style="width:40%"></div></div>
+                <div class="progress"><div class="prog-fill p-blue" style="width:40%"></div></div>
             </div>
+
         </div>
     </div>
 
-    <div class="member-column">
-        <div class="member-header siva">
-            <div class="member-avatar">S</div>
-            <div><div class="member-name">Siva</div><div class="member-role">Security & Compliance</div></div>
+    <!-- SIVA -->
+    <div class="column col-siva">
+        <div class="col-header">
+            <div class="avatar av-amber">S</div>
+            <div><div class="col-name">Siva</div><div class="col-role">Security & Compliance</div></div>
+            <span class="task-badge">3</span>
         </div>
-        <div class="tasks-list">
+        <div class="tasks">
+
             <div class="task-card">
-                <div class="task-title">🛡️ IAM Policy Review</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge completed">✅ Completed</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">22 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk low">Low</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">None</span></div>
+                <div class="task-id">#AZ-007</div>
+                <div class="task-title">IAM policy review</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-done">Completed</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">22 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-low">Low</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">None</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-green"></div></div>
+                <div class="progress"><div class="prog-fill p-green"></div></div>
             </div>
+
             <div class="task-card">
-                <div class="task-title">🔒 Security Compliance Audit</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge inprogress">🔄 In Progress</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">02 Jul 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk medium">Medium</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">IAM Policy Review</span></div>
+                <div class="task-id">#AZ-008</div>
+                <div class="task-title">Security compliance audit</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-prog">In progress</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">02 Jul 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-med">Medium</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">IAM policy review</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-yellow" style="width:50%"></div></div>
+                <div class="progress"><div class="prog-fill p-blue" style="width:50%"></div></div>
             </div>
+
             <div class="task-card">
-                <div class="task-title">📋 Access Control Documentation</div>
-                <div class="task-meta">
-                    <div class="task-row"><span class="key">Status</span><span class="badge delayed">⚠️ Delayed</span></div>
-                    <div class="task-row"><span class="key">Due Date</span><span class="date">24 Jun 2026</span></div>
-                    <div class="task-row"><span class="key">Risk</span><span class="risk high">High</span></div>
-                    <div class="task-row"><span class="key">Dependency</span><span class="dependency">Security Audit</span></div>
+                <div class="task-id">#AZ-009</div>
+                <div class="task-title">Access control documentation</div>
+                <div class="task-fields">
+                    <div class="field-row"><span class="field-key">Status</span><span class="badge b-delay">Delayed</span></div>
+                    <div class="field-row"><span class="field-key">Due date</span><span class="date-val">24 Jun 2026</span></div>
+                    <div class="field-row"><span class="field-key">Risk</span><span class="risk-high">High</span></div>
+                    <div class="field-row"><span class="field-key">Dependency</span><span class="dep-val">Security audit</span></div>
                 </div>
-                <div class="progress-bar"><div class="progress-fill fill-red" style="width:20%"></div></div>
+                <div class="progress"><div class="prog-fill p-red" style="width:20%"></div></div>
             </div>
+
         </div>
     </div>
 
 </div>
 
 <footer>
-    Deployed via Azure DevOps | ERIKS IoT Project | Version 4.0 | Manager: Vivek R
+    Deployed via Azure DevOps &nbsp;|&nbsp; ERIKS IoT Project &nbsp;|&nbsp; Version 5.0 &nbsp;|&nbsp; Manager: Vivek R
 </footer>
 
 </body>
@@ -342,7 +248,7 @@ def hello():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok", "version": "4.0"})
+    return jsonify({"status": "ok", "version": "5.0"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
