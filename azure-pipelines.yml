@@ -5,8 +5,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  azureSubscription: 'Test Devops'   # matches your actual service connection name
-  webAppName: 'pythontestapp'        # your Azure Web App name
+  azureSubscription: 'Devops Connection'   # updated to match the actual working service connection
+  webAppName: 'pythontestapp'              # your Azure Web App name
 
 stages:
   - stage: Build
