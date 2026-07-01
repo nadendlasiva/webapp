@@ -1,39 +1,51 @@
 trigger:
-- main
+  - main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  pythonVersion: '3.11'
-  azureWebAppName: 'pythontestapp'
+  azureSubscription: 'Test Devops'   # matches your actual service connection name
+  webAppName: 'pythontestapp'        # your Azure Web App name
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(pythonVersion)'
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildJob
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.11'
+              addToPath: true
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: "Install dependencies"
+          - script: |
+              python -m venv antenv
+              source antenv/bin/activate
+              pip install -r requirements.txt
+            displayName: 'Install dependencies'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)'
-    includeRootFolder: false
-    archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+              replaceExistingArchive: true
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
-    artifactName: drop
+          - publish: '$(Build.ArtifactStagingDirectory)/app.zip'
+            artifact: drop
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'azuredevops'
-    appType: 'webAppLinux'
-    appName: 'pythontestapp'
-    package: '$(Build.ArtifactStagingDirectory)/app.zip'
-    startUpCommand: 'gunicorn --bind=0.0.0.0:8000 app:app'
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - job: DeployJob
+        steps:
+          - download: current
+            artifact: drop
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: 'webAppLinux'
+              appName: '$(webAppName)'
+              package: '$(Pipeline.Workspace)/drop/app.zip'
